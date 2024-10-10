@@ -22,7 +22,7 @@ const Navbar = () => {
         <form className="flex w-full justify-end space-x-2">
           <TextField
             size="small"
-            className="w-[80%]"
+            className="md:w-[80%]"
             id="outlined-basic"
             label="Search"
             variant="outlined"
