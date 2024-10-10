@@ -12,15 +12,19 @@ const Context = () => {
   const initialPage = getParam("page") ? Number(getParam("page")) : 1;
   const [page, setPageState] = useState<number>(initialPage);
 
-  const getPaging = async (currentPage: number) => {
+  const getPaging = async (currentPage: number, search?: string, is_infinity: boolean = true) => {
     try {
       setLoading(true);
       const response = await api.category.getPaging({
         limit: getParam("limit") ? Number(getParam("limit")) : 20,
         page: currentPage,
+        search
       });
-      console.log("API Response:", response.data); 
-      setCategory(prev => [...prev, ...response.data.data]); 
+      if(is_infinity){
+        setCategory(prev => [...prev, ...response.data.data]);   
+      }else{
+        setCategory(prev => response.data.data); 
+      }
       setTotal(response.data.total);
     } catch (err) {
       console.error(err);
@@ -32,6 +36,11 @@ const Context = () => {
   useEffect(() => {
     getPaging(page); 
   }, [page]); 
+
+  useEffect(() => {
+    getPaging(1, getParam("search"), false)
+  }, [getParam("search")])
+
 
   const updatePage = (newPage: number | ((prevPage: number) => number)) => {
     if (typeof newPage === 'function') {

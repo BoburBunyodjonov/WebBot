@@ -14,7 +14,7 @@ const Context = () => {
   }, 300);
 
   useEffect(() => {
-    console.log(getParam("search"))
+    getParam("search")
   }, [getParam("search")]);
 
   return {
