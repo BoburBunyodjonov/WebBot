@@ -41,7 +41,7 @@ const Cart = () => {
     actions: { onFinish },
   } = useCartContext();
 
-  const headers = ["Image", "Name", "Soni", "Narxi", "Summa"];
+  const headers = ["Rasmi", "Nomi", "Soni", "Narxi", "Summa"];
 
   const renderBody = cartitems.map((item: any, index: any) => (
     <TableRow

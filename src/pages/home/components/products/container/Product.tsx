@@ -28,7 +28,7 @@ const Product = () => {
   const cartItems = useSelector((state: RootState) => state.cart);
   const [quantity, setQuantity] = useState(0);
 
-  const headers = ["Image", "Name", "narxi"];
+  const headers = ["Rasmi", "Nomi", "Narxi"];
   const [productDrawerOpen, setProductDrawerOpen] = useState(false);
   const [count1, setCount1] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);

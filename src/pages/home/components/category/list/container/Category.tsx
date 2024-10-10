@@ -7,7 +7,7 @@ import { FolderIcon } from "../../../../../../assets/svgs";
 import Loading from "../../../../../../components/loading/Loading";
 
 const Category = () => {
-  const headers = ["Image", "Name", "Soni"];
+  const headers = ["Rasmi", "Nomi", "Soni"];
   const navigate = useNavigate();
 
   const {
