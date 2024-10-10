@@ -1,13 +1,16 @@
 import { Button, TableCell, TableRow } from "@mui/material";
 import TableComp from "../../../components/elements/table/Table";
-import { FolderIcon } from "../../../assets/svgs";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { CartItem } from "../../../common/types/cart";
-import { Delete } from "@mui/icons-material";
+import { Delete, Image } from "@mui/icons-material";
 import { clearCart } from "../../../store/cartSlice";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import { useCartContext } from "../services/cartContext";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { myCookie } from "../../../utils/myCookie";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -15,9 +18,28 @@ const Cart = () => {
 
   const totalQuantity = cartitems.reduce((acc, item) => acc + item.quantity, 0);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let access_token = myCookie.get("access_token");
+
+    if (!access_token) {
+      navigate("/login");  
+    }
+  }, [navigate]);
+
   const handleClearCart = () => {
     dispatch(clearCart());
   };
+
+  const {
+    formMethods: {
+      handleSubmit,
+      control,
+      formState: { errors },
+    },
+    actions: { onFinish },
+  } = useCartContext();
 
   const headers = ["Image", "Name", "Soni", "Narxi", "Summa"];
 
@@ -29,14 +51,40 @@ const Cart = () => {
       }}
     >
       <TableCell className="border flex justify-center">
-        <FolderIcon />
+        {item.image ? (
+          <img
+            className="w-[100px] h-[100px] object-contain rounded"
+            src={`${process.env.REACT_APP_BASE_UPLOAD_URL}${item.image}`}
+            alt=""
+          />
+        ) : (
+          <div className="w-[100px] h-[100px] flex justify-center items-center bg-gray-200 rounded">
+            <Image fontSize="large" className="text-gray-500" />
+          </div>
+        )}
       </TableCell>
       <TableCell className="border">{item.name}</TableCell>
       <TableCell className="border">{item.quantity}</TableCell>
       <TableCell className="border">{item.price}</TableCell>
-      <TableCell className="border">{item.price}</TableCell>
+      <TableCell className="border">{item.price * item.quantity}</TableCell>
     </TableRow>
   ));
+
+  const handleSendItems = async () => {
+    try {
+      const payload = {
+        products: cartitems.map((item) => ({
+          product_id: item._id,
+          amount: item.quantity,
+        })),
+      };
+      await onFinish(payload);
+      toast.success('Buyurtma yaratildi.')
+      dispatch(clearCart());
+    } catch (error) {
+      console.error("Failed to send items:", error);
+    }
+  };
 
   return (
     <>
@@ -46,10 +94,23 @@ const Cart = () => {
       </div>
       <TableComp bodyChildren={renderBody} headers={headers} />
       <div className="container absolute bottom-0 py-3 flex justify-center">
-        <Button variant="contained" className="space-x-2 w-[80%]">
-          <span>Jo'natish</span>
-          <LocalShippingIcon />
-        </Button>
+        <form
+          onSubmit={handleSubmit(handleSendItems)}
+          action=""
+          className="w-[70%]"
+        >
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2, mb: 2 }}
+            disabled={totalQuantity === 0}
+          >
+            Jo'natish
+            <LocalShippingIcon />
+          </Button>
+        </form>
       </div>
     </>
   );

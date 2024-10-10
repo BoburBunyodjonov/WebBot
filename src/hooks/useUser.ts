@@ -15,7 +15,7 @@ export default function useUser() {
       path: "/",
       expires: new Date(Date.now() + 30 * 86400e3),
       maxAge: 3600 * 24 * 30,
-      //   domain: "xitoyda-talim.uz",
+      //   domain: "",
       //   secure: true,
       //   httpOnly: false,
       sameSite: "strict",

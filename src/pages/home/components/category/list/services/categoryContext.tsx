@@ -1,11 +1,9 @@
 import React, { FC, createContext, useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import api from "../../../../../../common/api";
 import { ICategory } from "../../../../../../common/types/category";
 import useQueryParams from "../../../../../../hooks/useQueryParams";
 
 const Context = () => {
-  const { search } = useLocation();
   const [category, setCategory] = useState<ICategory[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);

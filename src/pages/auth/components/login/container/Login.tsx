@@ -9,13 +9,13 @@ const Login = () => {
     actions: { onFinish },
   } = useLoginContext();
 
-
   return (
     <form onSubmit={handleSubmit(onFinish)} className="space-y-3">
       <Controller
         name="login"
         control={control}
         defaultValue=""
+        rules={{ required: "Login or phone number is required" }}
         render={({ field }) => (
           <TextField
             {...field}
@@ -24,13 +24,21 @@ const Login = () => {
             fullWidth
             label="Login or Phone Number"
             error={!!errors.login}
-             helperText={errors.login ? errors.login.message : ""}
+            helperText={errors.login ? errors.login.message : ""}
           />
         )}
       />
-       <Controller
+
+      <Controller
         name="chat_id"
         control={control}
+        rules={{
+          required: "Chat ID is required",
+          pattern: {
+            value: /^\d+$/, 
+            message: "Chat ID must be numeric",
+          },
+        }}
         render={({ field }) => (
           <TextField
             {...field}
@@ -39,12 +47,12 @@ const Login = () => {
             fullWidth
             label="Chat Id"
             error={!!errors.chat_id}
-             helperText={errors.chat_id ? errors.chat_id.message : ""}
+            helperText={errors.chat_id ? errors.chat_id.message : ""}
           />
         )}
       />
-      {errors.chat_id && <p>{errors.chat_id.message}</p>}
-      <PasswordInput control={control} name="password" />
+
+      <PasswordInput control={control} name="password"  />
 
       <Button
         type="submit"

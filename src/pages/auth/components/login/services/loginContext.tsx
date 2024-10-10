@@ -4,7 +4,6 @@ import api from "../../../../../common/api";
 import { toast } from "react-toastify"; 
 import useAuth from "../../../../../hooks/useAuth";
 import useUser from "../../../../../hooks/useUser";
-import { useNavigate } from "react-router-dom";
 
 export type FieldType = {
   phone_number: string; 
@@ -46,7 +45,6 @@ export const LoginContextProvider: FC<{ children: React.ReactNode }> = ({ childr
         ...values,
         chat_id: Number(values.chat_id), 
       };
-  
       const response = await api.account.login(formData);
       if (response.data.token) {
         setAuth(response.data.token);
@@ -58,10 +56,7 @@ export const LoginContextProvider: FC<{ children: React.ReactNode }> = ({ childr
         err.response.data.errors.forEach((error: { message: string }) => {
           toast.error(error.message);
         });
-      } else {
-        toast.error("An unexpected error occurred. Please try again.");
-      }
-      console.log(err);
+      } 
     }
   };
   

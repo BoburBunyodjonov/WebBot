@@ -1,11 +1,9 @@
 import React, { FC, createContext, useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { ICategory } from "../../../../../common/types/category";
 import useQueryParams from "../../../../../hooks/useQueryParams";
 import api from "../../../../../common/api";
 
 const Context = () => {
-  const { search } = useLocation();
   const [product, setProduct] = useState<ICategory[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -14,15 +12,19 @@ const Context = () => {
   const initialPage = getParam("page") ? Number(getParam("page")) : 1;
   const [page, setPageState] = useState<number>(initialPage);
 
-  const getPaging = async (currentPage: number) => {
+  const getPaging = async (currentPage: number, search?: string, is_infinity: boolean = true) => {
     try {
       setLoading(true);
       const response = await api.product.getPaging({
         limit: getParam("limit") ? Number(getParam("limit")) : 20,
         page: currentPage,
+        search
       });
-      console.log("API Response:", response.data); 
-      setProduct(prev => [...prev, ...response.data.data]); 
+      if(is_infinity){
+        setProduct(prev => [...prev, ...response.data.data]);   
+      }else{
+        setProduct(prev => response.data.data); 
+      }
       setTotal(response.data.total);
     } catch (err) {
       console.error(err);
@@ -33,7 +35,11 @@ const Context = () => {
 
   useEffect(() => {
     getPaging(page); 
-  }, [page]); 
+  }, [page]);
+
+  useEffect(() => {
+    getPaging(1, getParam("search"), false)
+  }, [getParam("search")])
 
   const updatePage = (newPage: number | ((prevPage: number) => number)) => {
     if (typeof newPage === 'function') {

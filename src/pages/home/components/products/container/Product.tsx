@@ -18,6 +18,9 @@ import {
 } from "../../../../../store/cartSlice";
 import { RootState } from "../../../../../store/store";
 import { CartItem } from "../../../../../common/types/cart";
+import { toast } from "react-toastify";
+import { Image } from "@mui/icons-material";
+import Loading from "../../../../../components/loading/Loading";
 
 const Product = () => {
   // Reduc Toolkit
@@ -28,7 +31,6 @@ const Product = () => {
   const headers = ["Image", "Name", "narxi"];
   const [productDrawerOpen, setProductDrawerOpen] = useState(false);
   const [count1, setCount1] = useState(0);
-  const [count2, setCount2] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   const {
@@ -61,14 +63,31 @@ const Product = () => {
   }, [cartItems, selectedProduct]);
 
   const handleAddToCart = () => {
-    dispatch(add(selectedProduct));
+    dispatch(
+      add({
+        ...selectedProduct,
+        quantity: quantity,
+      })
+    );
+
     setQuantity(1);
     handleProductDrawerToggle();
   };
 
   const handleIncrease = () => {
-    dispatch(increaseQuantity(selectedProduct._id));
-    setQuantity((prevQuantity) => prevQuantity + 1);
+    if (quantity < selectedProduct?.quantity) {
+      dispatch(
+        increaseQuantity({
+          _id: selectedProduct._id,
+          availableStock: selectedProduct.quantity,
+        })
+      );
+      setQuantity((prevQuantity) => prevQuantity + 1);
+    } else {
+      toast.error(
+        "Sizning buyurtmangiz mavjud miqdordan ko'p bo'lishi mumkin emas!"
+      );
+    }
   };
 
   const handleDecrease = () => {
@@ -83,42 +102,39 @@ const Product = () => {
   const increment1 = () => setCount1(count1 + 1);
   const decrement1 = () => setCount1(count1 - 1);
 
-  // const increment2 = () => {
-  //   if (count2 < selectedProduct?.quantity) {
-  //     setCount2(count2 + 1);
-  //   }
-  // };
-
-  // const decrement2 = () => {
-  //   if (count2 > 0) {
-  //     setCount2(count2 - 1);
-  //   }
-  // };
-
   const handleProductDrawerToggle = () => {
     setProductDrawerOpen(!productDrawerOpen);
   };
 
   const handleProductClick = (item: any) => {
     setSelectedProduct(item);
-    setCount1(0); // Reset counter 1
-    setCount2(0); // Reset counter 2
+    setCount1(0);
     handleProductDrawerToggle();
   };
 
   const renderBody = product.map((item: any, index: any) => (
     <TableRow
+      className="cursor-pointer"
+      onClick={() => handleProductClick(item)}
       key={item.id}
       sx={{
         backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#e0e0e0",
       }}
     >
       <TableCell className="border flex justify-center">
-        <FolderIcon />
+        {item.image ? (
+          <img
+            className="w-[100px] h-[100px] object-contain rounded"
+            src={`${process.env.REACT_APP_BASE_UPLOAD_URL}${item.image}`}
+            alt=""
+          />
+        ) : (
+          <div className="w-[100px] h-[100px] flex justify-center items-center bg-gray-200 rounded">
+            <Image fontSize="large" className="text-gray-500" />
+          </div>
+        )}
       </TableCell>
-      <TableCell onClick={() => handleProductClick(item)} className="border">
-        {item.name}
-      </TableCell>
+      <TableCell className="border">{item.name}</TableCell>
       <TableCell className="border">{item.price}</TableCell>
     </TableRow>
   ));
@@ -151,7 +167,7 @@ const Product = () => {
       {product.length < total && !loading && (
         <div ref={loadMoreRef} style={{ height: "20px", marginTop: "16px" }} />
       )}
-      {loading && <h4>Loading...</h4>}
+      {loading && <Loading />}
 
       <ModalTop
         open={productDrawerOpen}

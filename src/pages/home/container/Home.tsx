@@ -1,8 +1,20 @@
-import { Badge, Button, Fab } from "@mui/material";
 import Category from "../components/category/list/container";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { myCookie } from "../../../utils/myCookie";
 
 const Home = () => {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let access_token = myCookie.get("access_token");
+
+    if (!access_token) {
+      navigate("/login");  
+    }
+  }, [navigate]);
+
   return (
       <Category />
   );

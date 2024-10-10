@@ -1,11 +1,14 @@
-import Cart from "./Cart"
+import { CartContextProvider } from "../services/cartContext";
+import Cart from "./Cart";
 
 const index = () => {
   return (
     <>
-        <Cart/>
+      <CartContextProvider>
+        <Cart />
+      </CartContextProvider>
     </>
-  )
-}
+  );
+};
 
-export default index
+export default index;
