@@ -1,7 +1,7 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { ToggleButton } from "@mui/material";
-import Search from "../search/Search";
+import { Button, TextField, ToggleButton } from "@mui/material";
 import { Link } from "react-router-dom";
+import SearchIcon from '@mui/icons-material/Search';
 
 const Navbar = () => {
   return (
@@ -12,7 +12,10 @@ const Navbar = () => {
             <MenuIcon  />
           </Link>
         </ToggleButton>
-        <Search />
+        <form className="flex w-full justify-end space-x-2">
+        <TextField size="medium" className="w-[80%]" id="outlined-basic" label="Search" variant="outlined" />
+        <Button size="medium" variant="contained"><SearchIcon/></Button>
+    </form>
       </div>
     </>
   );

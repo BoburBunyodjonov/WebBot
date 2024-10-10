@@ -3,7 +3,16 @@ import { ILanguges } from "./common";
 export interface ICategoryApi {
   data: ICategory[];
   total: number;
+  products?: IProduct[];
 }
+
+export interface IProduct {
+  _id: string; // Product ID
+  name?: string; // Product name
+  price?: number; // Product price
+  // Add other relevant properties
+}
+
 
 export interface ICategory {
   title?: ILanguges<string>;

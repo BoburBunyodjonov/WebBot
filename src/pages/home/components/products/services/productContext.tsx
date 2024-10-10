@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { ICategory } from "../../../../../common/types/category";
 import useQueryParams from "../../../../../hooks/useQueryParams";
 import api from "../../../../../common/api";
-// Adjust the import path accordingly
 
 const Context = () => {
   const { search } = useLocation();
@@ -12,11 +11,9 @@ const Context = () => {
   const [loading, setLoading] = useState(true);
   const { getParam, setParam } = useQueryParams();
 
-  // Initialize page state from query param or default to 1
   const initialPage = getParam("page") ? Number(getParam("page")) : 1;
   const [page, setPageState] = useState<number>(initialPage);
 
-  // Fetch categories based on the current page
   const getPaging = async (currentPage: number) => {
     try {
       setLoading(true);

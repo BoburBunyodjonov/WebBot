@@ -145,7 +145,7 @@ const Product = () => {
   }, [loading, product.length, total]);
 
   return (
-    <>
+    <div>
       <TableComp bodyChildren={renderBody} headers={headers} />
 
       {product.length < total && !loading && (
@@ -209,7 +209,7 @@ const Product = () => {
           </>
         )}
       </ModalTop>
-    </>
+    </div>
   );
 };
 

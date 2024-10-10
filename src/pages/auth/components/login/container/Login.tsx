@@ -13,7 +13,7 @@ const Login = () => {
   return (
     <form onSubmit={handleSubmit(onFinish)} className="space-y-3">
       <Controller
-        name="phone_number"
+        name="login"
         control={control}
         defaultValue=""
         render={({ field }) => (
@@ -23,12 +23,27 @@ const Login = () => {
             margin="normal"
             fullWidth
             label="Login or Phone Number"
-            error={!!errors.phone_number}
-             helperText={errors.phone_number ? errors.phone_number.message : ""}
+            error={!!errors.login}
+             helperText={errors.login ? errors.login.message : ""}
           />
         )}
       />
-      {errors.phone_number && <p>{errors.phone_number.message}</p>}
+       <Controller
+        name="chat_id"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            label="Chat Id"
+            error={!!errors.chat_id}
+             helperText={errors.chat_id ? errors.chat_id.message : ""}
+          />
+        )}
+      />
+      {errors.chat_id && <p>{errors.chat_id.message}</p>}
       <PasswordInput control={control} name="password" />
 
       <Button
