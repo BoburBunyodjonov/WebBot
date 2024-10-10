@@ -106,8 +106,9 @@ const Cart = () => {
             color="primary"
             sx={{ mt: 2, mb: 2 }}
             disabled={totalQuantity === 0}
+            className="space-x-2 flex items-center"
           >
-            Jo'natish
+            <span>Jo'natish</span>
             <LocalShippingIcon />
           </Button>
         </form>
