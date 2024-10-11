@@ -1,9 +1,11 @@
-import React, { FC, createContext, useContext } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
-import api from "../../../../../common/api"; 
-import { toast } from "react-toastify"; 
+import React, { createContext, FC, useContext, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import api from "../../../../../common/api";
 import useAuth from "../../../../../hooks/useAuth";
+import useQueryParams from "../../../../../hooks/useQueryParams";
 import useUser from "../../../../../hooks/useUser";
+import { useLocation, useParams } from "react-router-dom";
 
 export type FieldType = {
   phone_number: string; 
@@ -16,63 +18,72 @@ interface ErrorInfo {
   errors?: { message: string }[];
 }
 
-interface LoginContextProps {
-  formMethods: UseFormReturn<FieldType>;
-  actions: {
-    onFinish: (values: FieldType) => Promise<void>;
-    onFinishFailed: (errorInfo: ErrorInfo) => void;
-  };
-}
-
-const LoginContext = createContext<LoginContextProps | undefined>(undefined);
-
-export const useLoginContext = () => {
-  const context = useContext(LoginContext);
-  if (!context) {
-    throw new Error("useLoginContext must be used within a LoginContextProvider");
-  }
-  return context;
-};
-
-export const LoginContextProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const Context = () => {
   const formMethods = useForm<FieldType>({});
   const { setAuth } = useAuth();
   const { setUser } = useUser();
+  const { search } = useLocation();
+  const params = useMemo(() => new URLSearchParams(search), [search]);
+  const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if ((window as any).Telegram?.WebApp) {
+      const initDataUnsafe = (window as any).Telegram.WebApp.initDataUnsafe;
+
+      if (initDataUnsafe?.user) {
+        setUserId(initDataUnsafe.user.id);
+      }
+    }
+    if(params.get("chat_id")) setUserId(Number(params.get("chat_id")));
+  }, [params]);
 
   const onFinish = async (values: FieldType) => {
     try {
       const formData = {
         ...values,
-        chat_id: Number(values.chat_id), 
+        chat_id: userId,
       };
       const response = await api.account.login(formData);
       if (response.data.token) {
         setAuth(response.data.token);
         setUser(response.data);
-        window.location.href = "/"; 
+        window.location.href = "/";
       }
     } catch (err: any) {
       if (err.response && err.response.data && err.response.data.errors) {
         err.response.data.errors.forEach((error: { message: string }) => {
           toast.error(error.message);
         });
-      } 
+      }
     }
   };
-  
 
   const onFinishFailed = (errorInfo: ErrorInfo) => {
     console.error("Failed:", errorInfo);
     if (errorInfo.errors) {
       errorInfo.errors.forEach((error) => {
-        toast.error(error.message); 
+        toast.error(error.message);
       });
     }
   };
+  return {
+    formMethods,
+    state: {userId},
+    actions: {onFinish, onFinishFailed},
+  };
+};
 
+const LoginContext = createContext<any>({ formMethods: {}, state: {}, actions: {} });
+
+export const LoginContextProvider: FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const value = Context();
   return (
-    <LoginContext.Provider value={{ formMethods, actions: { onFinish, onFinishFailed } }}>
-      {children}
-    </LoginContext.Provider>
+    <LoginContext.Provider value={value}>{children}</LoginContext.Provider>
   );
 };
+
+export default function useLoginContext() {
+  return useContext<ReturnType<typeof Context>>(LoginContext);
+}

@@ -17,7 +17,7 @@ const PasswordInput: React.FC<PasswordInputProps>  = ({ control, name }) => {
       render={({ field, fieldState }) => (
         <TextField
           {...field}
-          label="Password"
+          label="Parol"
           type={showPassword ? "text" : "password"}
           variant="outlined"
           fullWidth

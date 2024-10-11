@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   add,
   increaseQuantity,
+  increaseBox,
+  decreaseBox,
   decreaseQuantity,
 } from "../../../../../store/cartSlice";
 import { RootState } from "../../../../../store/store";
@@ -27,10 +29,10 @@ const Product = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart);
   const [quantity, setQuantity] = useState(0);
+  const [box, setBox] = useState(0);
 
   const headers = ["Rasmi", "Nomi", "Narxi"];
   const [productDrawerOpen, setProductDrawerOpen] = useState(false);
-  const [count1, setCount1] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   const {
@@ -56,9 +58,11 @@ const Product = () => {
         setQuantity(productInCart.quantity);
       } else {
         setQuantity(0);
+        setBox(0);
       }
     } else {
       setQuantity(0);
+      setBox(0);
     }
   }, [cartItems, selectedProduct]);
 
@@ -71,10 +75,12 @@ const Product = () => {
     );
 
     setQuantity(1);
+    setBox(1);
     handleProductDrawerToggle();
   };
 
-  const handleIncrease = () => {
+  //  Increase Quantity
+  const handleIncreaseQuantity = () => {
     if (quantity < selectedProduct?.quantity) {
       dispatch(
         increaseQuantity({
@@ -90,8 +96,9 @@ const Product = () => {
     }
   };
 
-  const handleDecrease = () => {
-    if (quantity > 1) {
+  // Decrease Quantity
+  const handleDecreaseQuantity = () => {
+    if (quantity > 0) {
       dispatch(decreaseQuantity(selectedProduct._id));
       setQuantity((prevQuantity) => prevQuantity - 1);
     } else if (quantity === 1) {
@@ -99,8 +106,34 @@ const Product = () => {
     }
   };
 
-  const increment1 = () => setCount1(count1 + 1);
-  const decrement1 = () => setCount1(count1 - 1);
+  //  Increase Box
+  const handleIncreaseBox = () => {
+    if (quantity < selectedProduct?.quantity) {
+      dispatch(
+        increaseBox({
+          _id: selectedProduct._id,
+          availableStock: selectedProduct.quantity,
+        })
+      );
+      setQuantity((prevQuantity) => prevQuantity + selectedProduct.box_item);
+      setBox((prevBox) => prevBox + 1);
+    } else {
+      toast.error(
+        "Sizning buyurtmangiz mavjud miqdordan ko'p bo'lishi mumkin emas!"
+      );
+    }
+  };
+
+  // Decrease Box
+  const handleDecreaseBox = () => {
+    if (box > 0) {
+      dispatch(decreaseBox(selectedProduct._id));
+      setQuantity((prevQuantity) => prevQuantity - selectedProduct.box_item);
+      setBox((prevBox) => prevBox - 1);
+    } else if (quantity === 1) {
+      dispatch(decreaseBox(selectedProduct._id));
+    }
+  };
 
   const handleProductDrawerToggle = () => {
     setProductDrawerOpen(!productDrawerOpen);
@@ -108,7 +141,6 @@ const Product = () => {
 
   const handleProductClick = (item: any) => {
     setSelectedProduct(item);
-    setCount1(0);
     handleProductDrawerToggle();
   };
 
@@ -116,7 +148,7 @@ const Product = () => {
     <TableRow
       className="cursor-pointer"
       onClick={() => handleProductClick(item)}
-      key={item.id}
+      key={index}
       sx={{
         backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#e0e0e0",
       }}
@@ -185,20 +217,22 @@ const Product = () => {
             <div className="flex justify-between items-center">
               <p className="font-bold">Karobka</p>
               <div className="flex items-center justify-center space-x-4 py-4">
-                <Button variant="contained" onClick={decrement1}>
-                  <RemoveIcon />
-                </Button>
-                <input
-                  min="0"
-                  pattern="[0-9]*"
-                  max="35"
-                  className="w-10 bg-[#F8F8F8] flex-grow text-center py-2 px-0 text-telegram-black bg-telegram-secondary-white outline-none"
-                  type="text"
-                  value={count1}
-                />
-                <Button variant="contained" onClick={increment1}>
-                  <AddIcon />
-                </Button>
+                  <>
+                    <Button variant="contained" onClick={handleDecreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
+                      <RemoveIcon />
+                    </Button>
+                    <input
+                      min="0"
+                      pattern="[0-9]*"
+                      max="35"
+                      className="w-10 bg-[#F8F8F8] flex-grow text-center py-2 px-0 text-telegram-black bg-telegram-secondary-white outline-none"
+                      type="text"
+                      value={box}
+                    />
+                    <Button variant="contained" onClick={handleIncreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
+                      <AddIcon />
+                    </Button>
+                  </>
               </div>
             </div>
 
@@ -206,7 +240,7 @@ const Product = () => {
             <div className="flex justify-between items-center">
               <p className="font-bold">Soni</p>
               <div className="flex items-center justify-center space-x-4 py-4">
-                <Button variant="contained" onClick={handleDecrease}>
+                <Button variant="contained" onClick={handleDecreaseQuantity}>
                   <RemoveIcon />
                 </Button>
                 <input
@@ -217,7 +251,7 @@ const Product = () => {
                   type="text"
                   value={quantity}
                 />
-                <Button variant="contained" onClick={handleIncrease}>
+                <Button variant="contained" onClick={handleIncreaseQuantity} >
                   <AddIcon />
                 </Button>
               </div>

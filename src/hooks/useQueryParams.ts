@@ -43,19 +43,19 @@ export default function useQueryParams() {
     navigate(`${pathname}?${newParams}`, { state, replace: true });
   };
 
-  const getAllParams = useMemo(() => {
-    const res: any = {};
-    params.forEach((value, name) => {
-      const decoded = base64.decode(value);
-      res[name] = JSON.parse(decoded);
-    });
-    return { ...res };
-  }, [params]);
+  // const getAllParams = useMemo(() => {
+  //   const res: any = {};
+  //   params.forEach((value, name) => {
+  //     const decoded = base64.decode(value);
+  //     res[name] = JSON.parse(decoded);
+  //   });
+  //   return { ...res };
+  // }, [params]);
 
   return {
     getParam,
     setParam,
     setParams,
-    getAllParams,
+    // getAllParams,
   };
 }

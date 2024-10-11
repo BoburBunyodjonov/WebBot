@@ -45,7 +45,7 @@ const Cart = () => {
 
   const renderBody = cartitems.map((item: any, index: any) => (
     <TableRow
-      key={item.id}
+      key={index}
       sx={{
         backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#e0e0e0",
       }}

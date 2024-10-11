@@ -33,7 +33,13 @@
     "start": "env-cmd -f .env.development react-scripts start",
     "build": "env-cmd -f .env.development react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "---------------------------": "---------------------------",
+    "build:dev": "env-cmd -f .env.development react-scripts build",
+    "zip": "rm build.zip && zip -r build.zip build;",
+    "copy:dev": "scp -i dev.pem build.zip root@135.181.193.100:/var/www/bito-customer-bot/user",
+    "unzip:dev": "ssh -i dev.pem root@135.181.193.100 unzip -o /var/www/bito-customer-bot/user/build.zip -d /var/www/bito-customer-bot/user",
+    "dev-server": "npm run build:dev && npm run zip && npm run copy:dev && npm run unzip:dev"
   },
   "eslintConfig": {
     "extends": [

@@ -29,7 +29,7 @@ const Layout = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-      <div className="md:max-w-[500px] container overflow-scroll h-[91.5vh] mx-auto relative">
+      <div className="md:max-w-[500px] container overflow-scroll h-[91.5vh] mx-auto relative bg-white">
         <ToastContainer
           position="top-right"
           autoClose={5000}

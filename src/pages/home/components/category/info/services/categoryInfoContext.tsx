@@ -8,7 +8,6 @@ import React, {
   import { useLocation } from "react-router-dom";
 import { ICategory } from "../../../../../../common/types/category";
 import api from "../../../../../../common/api";
-import Category from '../../list/container/Category';
   
   const Context = () => {
     const { state } = useLocation();
@@ -22,7 +21,6 @@ import Category from '../../list/container/Category';
         const response = await api.category.getById(state.id);
         setCategory(response.data);
         setLaoading(false);
-        console.log(response.data)
       } catch (err) {
         console.log(err);
       }

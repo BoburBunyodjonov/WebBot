@@ -1,0 +1,82 @@
+{
+	// Place your optimal_erp workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	//  "scope": "javascript,typescript",
+	//  "prefix": "log",
+	//  "body": [
+	//   "console.log('$1');",
+	//   "$2"
+	//  ],
+	//  "description": "Log output to console"
+	// }
+	"TSContextSnippet": {
+	 "prefix": "TSContextSnippet",
+	 "body": [
+	   "import React, {",
+	   "    FC,",
+	   "    createContext,",
+	   "    useContext,",
+	   "  } from \"react\";",
+	   "  ",
+	   "  const Context = () => {",
+	   "    return {",
+	   "      state: {  },",
+	   "      actions: {  },",
+	   "    };",
+	   "  };",
+	   "  ",
+	   "  const ${1:PageName}Context = createContext<any>({ state: {}, actions: {} });",
+	   "  ",
+	   "  export const ${1:PageName}ContextProvider: FC<{",
+	   "    children: React.ReactNode;",
+	   "  }> = ({ children }) => {",
+	   "    const value = Context();",
+	   "    return (",
+	   "      <${1:PageName}Context.Provider value={value}>",
+	   "        {children}",
+	   "      </${1:PageName}Context.Provider>",
+	   "    );",
+	   "  };",
+	   "  ",
+	   "  export default function use${1:PageName}Context() {",
+	   "    return useContext<ReturnType<typeof Context>>(${1:PageName}Context);",
+	   "  }",
+	   "  "
+	 ],
+	 "description": "TSContextSnippet"
+	  },
+	  "TSRoutesSnippet": {
+	 "prefix": "TSRoutesSnippet",
+	 "body": [
+	   "import { ${3: TypeInterface} } from \"../common/types/${4: interface_path}.types\";",
+	   "import { lazy } from \"react\";",
+	   "import { Route, Switch } from \"react-router-dom\";",
+	   "",
+	   "const ${1: PageName} = lazy(() => import(\"../components/${1: PageName}\"));",
+	   "const ${2: PagenName2} = lazy(() => import(\"../components/${2: PagenName2}\"));",
+	   "",
+	   "const Bitoverse: React.FC<${3: TypeInterface}> = ({ match: { url } }) => {",
+	   "  return (",
+	   "    <Switch>",
+	   "      <Route",
+	   "        path={`${url}/accounts/:companyId/:_id`}",
+	   "        component={${1: PageName}}",
+	   "      />",
+	   "      <Route path={`${url}/requests/`} component={${2: PagenName2}} />",
+	   "      <Route path={`${url}/`} component={${2: PagenName2}} />",
+	   "    </Switch>",
+	   "  );",
+	   "};",
+	   "",
+	   "export default Bitoverse;",
+	   ""
+	 ],
+	 "description": "TSRoutesSnippet"
+	  }
+   }

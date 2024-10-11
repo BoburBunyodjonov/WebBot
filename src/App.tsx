@@ -43,11 +43,9 @@ const router = createBrowserRouter([
 
 const App = () => {
   return (
-    <LoginContextProvider>
       <StoreProvider>
         <RouterProvider router={router} />
       </StoreProvider>
-    </LoginContextProvider>
   );
 };
 

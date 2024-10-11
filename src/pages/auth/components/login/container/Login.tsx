@@ -1,35 +1,37 @@
 import { Button, TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 import PasswordInput from "../../../../../components/form/passwordInput/PasswordInput";
-import { useLoginContext } from "../services/loginContext";
+import useLoginContext from "../services/loginContext";
 
 const Login = () => {
   const {
+    state: {userId},
     formMethods: { handleSubmit, control, formState: { errors } },
     actions: { onFinish },
   } = useLoginContext();
 
   return (
     <form onSubmit={handleSubmit(onFinish)} className="space-y-3">
+      {userId}
       <Controller
         name="login"
         control={control}
         defaultValue=""
-        rules={{ required: "Login or phone number is required" }}
+        rules={{ required: "Login is required" }}
         render={({ field }) => (
           <TextField
             {...field}
             variant="outlined"
             margin="normal"
             fullWidth
-            label="Login or Phone Number"
+            label="Login"
             error={!!errors.login}
             helperText={errors.login ? errors.login.message : ""}
           />
         )}
       />
 
-      <Controller
+      {/* <Controller
         name="chat_id"
         control={control}
         rules={{
@@ -50,7 +52,7 @@ const Login = () => {
             helperText={errors.chat_id ? errors.chat_id.message : ""}
           />
         )}
-      />
+      /> */}
 
       <PasswordInput control={control} name="password"  />
 

@@ -32,7 +32,7 @@ const Category = () => {
     <TableRow
       className="cursor-pointer"
       onClick={() => handlerClickFunc(item._id)}
-      key={item._id}
+      key={index}
       sx={{
         backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#e0e0e0",
       }}

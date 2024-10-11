@@ -3,7 +3,7 @@ import {
   Container,
 } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import Login from "../components/login/container/Login";
+import Login from "../components/login/container/";
 
 const Auth = () => {
   const location = useLocation();
