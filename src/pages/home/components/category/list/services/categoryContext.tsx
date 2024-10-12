@@ -16,12 +16,13 @@ const Context = () => {
     try {
       setLoading(true);
       const response = await api.category.getPaging({
-        limit: getParam("limit") ? Number(getParam("limit")) : 20,
+        // limit: getParam("limit") ? Number(getParam("limit")) : 10,
+        limit: 20,
         page: currentPage,
-        search
+        search,
       });
       if(is_infinity){
-        setCategory(prev => [...prev, ...response.data.data]);   
+        // setCategory(prev => [...prev, ...response.data.data]);   
       }else{
         setCategory(prev => response.data.data); 
       }
@@ -44,14 +45,14 @@ const Context = () => {
 
   const updatePage = (newPage: number | ((prevPage: number) => number)) => {
     if (typeof newPage === 'function') {
-      setPageState(prevPage => {
-        const updatedPage = newPage(prevPage);
-        setParam({ name: "page", value: updatedPage }); 
-        return updatedPage;
-      });
+      // setPageState(prevPage => {
+      //   const updatedPage = newPage(prevPage);
+      //   // setParam({ name: "page", value: updatedPage }); 
+      //   return updatedPage;
+      // });
     } else {
       setPageState(newPage);
-      setParam({ name: "page", value: newPage }); 
+      // setParam({ name: "page", value: newPage }); 
     }
   };
 

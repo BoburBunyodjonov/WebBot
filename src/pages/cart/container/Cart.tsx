@@ -3,14 +3,15 @@ import TableComp from "../../../components/elements/table/Table";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { CartItem } from "../../../common/types/cart";
-import { Delete, Image } from "@mui/icons-material";
-import { clearCart } from "../../../store/cartSlice";
+import { Delete, Image, Remove } from "@mui/icons-material";
+import { clearCart, removeItem } from "../../../store/cartSlice";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import { useCartContext } from "../services/cartContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { myCookie } from "../../../utils/myCookie";
+import formatPriceWithSpaces from "../../../hooks/formatPrice";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -24,12 +25,17 @@ const Cart = () => {
     let access_token = myCookie.get("access_token");
 
     if (!access_token) {
-      navigate("/login");  
+      navigate("/login");
     }
   }, [navigate]);
 
   const handleClearCart = () => {
     dispatch(clearCart());
+  };
+
+  const handleRemoveItem = (id: string) => {
+    dispatch(removeItem(id));
+    toast.success("Mahsulot savatdan o'chirildi!");
   };
 
   const {
@@ -41,7 +47,7 @@ const Cart = () => {
     actions: { onFinish },
   } = useCartContext();
 
-  const headers = ["Rasmi", "Nomi", "Soni", "Narxi", "Summa"];
+  const headers = ["Rasmi", "Nomi", "Soni", "Narxi", "Summa", ""];
 
   const renderBody = cartitems.map((item: any, index: any) => (
     <TableRow
@@ -65,8 +71,18 @@ const Cart = () => {
       </TableCell>
       <TableCell className="border">{item.name}</TableCell>
       <TableCell className="border">{item.quantity}</TableCell>
-      <TableCell className="border">{item.price}</TableCell>
-      <TableCell className="border">{item.price * item.quantity}</TableCell>
+      <TableCell className="border">
+        {formatPriceWithSpaces(item.price)}
+      </TableCell>
+      <TableCell className="border">
+        {formatPriceWithSpaces(item.price * item.quantity)}
+      </TableCell>
+      <TableCell className="border">
+        <Delete
+          className="text-red-500 cursor-pointer"
+          onClick={() => handleRemoveItem(item._id)}
+        />
+      </TableCell>
     </TableRow>
   ));
 
@@ -79,7 +95,7 @@ const Cart = () => {
         })),
       };
       await onFinish(payload);
-      toast.success('Buyurtma yaratildi.')
+      toast.success("Buyurtma yaratildi.");
       dispatch(clearCart());
     } catch (error) {
       console.error("Failed to send items:", error);
@@ -90,7 +106,10 @@ const Cart = () => {
     <>
       <div className="flex justify-between py-3 px-2">
         <p>Tovar: {totalQuantity} xil</p>
-        <Delete className=" cursor-pointer" onClick={handleClearCart} />
+        <span
+          className=" cursor-pointer"
+          onClick={handleClearCart}
+        >Savatni tozalash</span>
       </div>
       <TableComp bodyChildren={renderBody} headers={headers} />
       <div className="container absolute bottom-0 py-3 flex justify-center">

@@ -23,6 +23,7 @@ import { CartItem } from "../../../../../common/types/cart";
 import { toast } from "react-toastify";
 import { Image } from "@mui/icons-material";
 import Loading from "../../../../../components/loading/Loading";
+import formatPriceWithSpaces from "../../../../../hooks/formatPrice";
 
 const Product = () => {
   // Reduc Toolkit
@@ -53,47 +54,38 @@ const Product = () => {
       const productInCart = cartItems.find(
         (item: CartItem) => item._id === selectedProduct._id.toString()
       );
-
       if (productInCart) {
         setQuantity(productInCart.quantity);
       } else {
         setQuantity(0);
         setBox(0);
       }
-    } else {
-      setQuantity(0);
-      setBox(0);
     }
   }, [cartItems, selectedProduct]);
 
   const handleAddToCart = () => {
-    dispatch(
-      add({
-        ...selectedProduct,
-        quantity: quantity,
-      })
-    );
-
-    setQuantity(1);
-    setBox(1);
-    handleProductDrawerToggle();
+    if(quantity > 0 && quantity){
+      dispatch(
+        add({
+          ...selectedProduct,
+          quantity: quantity,
+        })
+      );
+      setQuantity(0);
+      setBox(0);
+      handleProductDrawerToggle();
+    }
   };
 
   //  Increase Quantity
   const handleIncreaseQuantity = () => {
-    if (quantity < selectedProduct?.quantity) {
-      dispatch(
-        increaseQuantity({
-          _id: selectedProduct._id,
-          availableStock: selectedProduct.quantity,
-        })
-      );
+      // dispatch(
+      //   increaseQuantity({
+      //     _id: selectedProduct._id,
+      //     availableStock: selectedProduct.quantity,
+      //   })
+      // );
       setQuantity((prevQuantity) => prevQuantity + 1);
-    } else {
-      toast.error(
-        "Sizning buyurtmangiz mavjud miqdordan ko'p bo'lishi mumkin emas!"
-      );
-    }
   };
 
   // Decrease Quantity
@@ -108,7 +100,6 @@ const Product = () => {
 
   //  Increase Box
   const handleIncreaseBox = () => {
-    if (quantity < selectedProduct?.quantity) {
       dispatch(
         increaseBox({
           _id: selectedProduct._id,
@@ -117,11 +108,6 @@ const Product = () => {
       );
       setQuantity((prevQuantity) => prevQuantity + selectedProduct.box_item);
       setBox((prevBox) => prevBox + 1);
-    } else {
-      toast.error(
-        "Sizning buyurtmangiz mavjud miqdordan ko'p bo'lishi mumkin emas!"
-      );
-    }
   };
 
   // Decrease Box
@@ -136,10 +122,16 @@ const Product = () => {
   };
 
   const handleProductDrawerToggle = () => {
-    setProductDrawerOpen(!productDrawerOpen);
+    setProductDrawerOpen(() => {
+      if(!productDrawerOpen === false){
+        setSelectedProduct(undefined)
+      }
+      return !productDrawerOpen
+    });
   };
 
   const handleProductClick = (item: any) => {
+    setQuantity(0);
     setSelectedProduct(item);
     handleProductDrawerToggle();
   };
@@ -167,7 +159,7 @@ const Product = () => {
         )}
       </TableCell>
       <TableCell className="border">{item.name}</TableCell>
-      <TableCell className="border">{item.price}</TableCell>
+      <TableCell className="border">{formatPriceWithSpaces(item.price)}</TableCell>
     </TableRow>
   ));
 

@@ -7,10 +7,10 @@ export interface ICategoryApi {
 }
 
 export interface IProduct {
-  _id: string; // Product ID
-  name?: string; // Product name
-  price?: number; // Product price
-  // Add other relevant properties
+  _id: string; 
+  name?: string; 
+  price?: number; 
+ 
 }
 
 
@@ -19,10 +19,12 @@ export interface ICategory {
   created_at?: string;
   seen_count?: number;
   content?: ILanguges<React.ReactNode>;
-  _id: string;
-  name?: string; // Assuming name is used in your render logic
+  _id: any;
+  name?: string; 
   price?: number;
-  quantity?: number;  // Add price property if applicable
+  quantity?: number; 
+  category: any;
+  item_count: number;
 }
 
 export interface ICategoryFilter {
@@ -30,4 +32,5 @@ export interface ICategoryFilter {
   limit: number;
   page: number;
   _id?: string;
+  category_ids?: string[];
 }

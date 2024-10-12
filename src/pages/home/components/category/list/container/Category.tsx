@@ -18,7 +18,7 @@ const Category = () => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const handlerClickFunc = (id: string) => {
-    navigate(`/product/${id}`);
+    navigate(`/product?id=${id}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -41,7 +41,7 @@ const Category = () => {
         <FolderIcon />
       </TableCell>
       <TableCell className="border">{item.name}</TableCell>
-      <TableCell className="border">{item.quantity}</TableCell>
+      <TableCell className="border">{item.item_count}</TableCell>
     </TableRow>
   ));
 

@@ -5,7 +5,7 @@ import api from "../../../../../common/api";
 import useAuth from "../../../../../hooks/useAuth";
 import useQueryParams from "../../../../../hooks/useQueryParams";
 import useUser from "../../../../../hooks/useUser";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export type FieldType = {
   phone_number: string; 
@@ -23,8 +23,24 @@ const Context = () => {
   const { setAuth } = useAuth();
   const { setUser } = useUser();
   const { search } = useLocation();
+  const navigate = useNavigate();
   const params = useMemo(() => new URLSearchParams(search), [search]);
   const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      setUserId(Number(storedUserId)); 
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userId !== null) {
+      localStorage.setItem("userId", userId.toString());
+    } else {
+      localStorage.removeItem("userId"); 
+    }
+  }, [userId]);
 
   useEffect(() => {
     if ((window as any).Telegram?.WebApp) {
@@ -47,9 +63,13 @@ const Context = () => {
       if (response.data.token) {
         setAuth(response.data.token);
         setUser(response.data);
-        window.location.href = "/";
+        navigate("/");  
       }
     } catch (err: any) {
+      if (err.response.data.code === 401) {
+        localStorage.clear();
+        navigate(`/login${search}`);  
+      }
       if (err.response && err.response.data && err.response.data.errors) {
         err.response.data.errors.forEach((error: { message: string }) => {
           toast.error(error.message);

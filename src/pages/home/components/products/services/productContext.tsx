@@ -2,12 +2,18 @@ import React, { FC, createContext, useContext, useEffect, useState } from "react
 import { ICategory } from "../../../../../common/types/category";
 import useQueryParams from "../../../../../hooks/useQueryParams";
 import api from "../../../../../common/api";
+import { useLocation } from "react-router-dom";
 
 const Context = () => {
   const [product, setProduct] = useState<ICategory[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const { getParam, setParam } = useQueryParams();
+  const { search } = useLocation();
+  const query = new URLSearchParams(search);
+  const productIdParam = query.get('id');
+  const productId = productIdParam ? productIdParam.split(',') : [];
+  
 
   const initialPage = getParam("page") ? Number(getParam("page")) : 1;
   const [page, setPageState] = useState<number>(initialPage);
@@ -16,12 +22,14 @@ const Context = () => {
     try {
       setLoading(true);
       const response = await api.product.getPaging({
-        limit: getParam("limit") ? Number(getParam("limit")) : 20,
+        // limit: getParam("limit") ? Number(getParam("limit")) : 20,
+        limit: 20,
         page: currentPage,
-        search
+        search,
+        category_ids: productId
       });
       if(is_infinity){
-        setProduct(prev => [...prev, ...response.data.data]);   
+        // setProduct(prev => [...prev, ...response.data.data]);   
       }else{
         setProduct(prev => response.data.data); 
       }
@@ -45,12 +53,12 @@ const Context = () => {
     if (typeof newPage === 'function') {
       setPageState(prevPage => {
         const updatedPage = newPage(prevPage);
-        setParam({ name: "page", value: updatedPage }); 
+        // setParam({ name: "page", value: updatedPage }); 
         return updatedPage;
       });
     } else {
       setPageState(newPage);
-      setParam({ name: "page", value: newPage }); 
+      // setParam({ name: "page", value: newPage }); 
     }
   };
 

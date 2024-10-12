@@ -1,7 +1,8 @@
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { Controller } from "react-hook-form";
 import PasswordInput from "../../../../../components/form/passwordInput/PasswordInput";
 import useLoginContext from "../services/loginContext";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const {
@@ -10,9 +11,29 @@ const Login = () => {
     actions: { onFinish },
   } = useLoginContext();
 
+
+  const handleCopyToClipboard = () => {
+    if (userId !== null) {
+      navigator.clipboard.writeText(userId.toString()).then(() => {
+        toast.success("User ID copied to clipboard!");
+      });
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onFinish)} className="space-y-3">
-      {userId}
+      <TextField
+        value={userId !== null ? userId : ""}
+        label="User id"
+        margin="normal"
+        InputProps={{
+          readOnly: true, 
+          onClick: handleCopyToClipboard,
+          className: "cursor-pointer no-outline"
+        }}
+        className="cursor-pointer no-outline"
+        fullWidth
+      />
       <Controller
         name="login"
         control={control}
@@ -30,29 +51,6 @@ const Login = () => {
           />
         )}
       />
-
-      {/* <Controller
-        name="chat_id"
-        control={control}
-        rules={{
-          required: "Chat ID is required",
-          pattern: {
-            value: /^\d+$/, 
-            message: "Chat ID must be numeric",
-          },
-        }}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            label="Chat Id"
-            error={!!errors.chat_id}
-            helperText={errors.chat_id ? errors.chat_id.message : ""}
-          />
-        )}
-      /> */}
 
       <PasswordInput control={control} name="password"  />
 

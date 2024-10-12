@@ -1,37 +1,40 @@
-import React, { ChangeEvent, ChangeEventHandler, FC, createContext, useContext, useEffect } from "react";
+import React, { ChangeEvent, FC, createContext, useContext, useEffect, useState } from "react";
 import useQueryParams from "../../../../hooks/useQueryParams";
-import {debounce} from "lodash"
+import { debounce } from "lodash";
 
 const Context = () => {
   const { setParam, getParam } = useQueryParams();
+  const [searchInput, setSearchInput] = useState<string>("");
 
-  const handleSearch = debounce((e: ChangeEvent<HTMLInputElement>) => {
-    if(e.target.value !== ""){
-      setParam({name:"search", value: e.target.value})
-    }else{
-      setParam({name:"search", value: undefined})
-    }
+  // Debounce input changes to avoid frequent updates
+  const handleInputChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
   }, 300);
 
+  // Trigger search when the button is clicked
+  const handleSearch = () => {
+    if (searchInput.trim() !== "") {
+      setParam({ name: "search", value: searchInput });
+    } else {
+      setParam({ name: "search", value: undefined });
+    }
+  };
+
   useEffect(() => {
-    getParam("search")
+    getParam("search");
   }, [getParam("search")]);
 
   return {
-    state: {},
-    actions: { handleSearch },
+    state: { searchInput },
+    actions: { handleInputChange, handleSearch },
   };
 };
 
 const SearchContext = createContext<any>({ state: {}, actions: {} });
 
-export const SearchContextProvider: FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
+export const SearchContextProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const value = Context();
-  return (
-    <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
-  );
+  return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>;
 };
 
 export default function useSearchContext() {
