@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const {
-    state: {userId},
+    state: { userId },
     formMethods: { handleSubmit, control, formState: { errors } },
     actions: { onFinish },
   } = useLoginContext();
@@ -14,11 +14,18 @@ const Login = () => {
 
   const handleCopyToClipboard = () => {
     if (userId !== null) {
-      navigator.clipboard.writeText(userId.toString()).then(() => {
-        toast.success("User ID copied to clipboard!");
-      });
+      navigator.clipboard.writeText(userId.toString())
+        .then(() => {
+          toast.info('User ID copied to clipboard!');
+        })
+        .catch(err => {
+          console.error('Failed to copy: ', err);
+        });
     }
   };
+  
+
+
 
   return (
     <form onSubmit={handleSubmit(onFinish)} className="space-y-3">
@@ -27,13 +34,15 @@ const Login = () => {
         label="User id"
         margin="normal"
         InputProps={{
-          readOnly: true, 
+          readOnly: true,
           onClick: handleCopyToClipboard,
+          // onFocus: handleCopyToClipboard,
           className: "cursor-pointer no-outline"
         }}
         className="cursor-pointer no-outline"
         fullWidth
       />
+
       <Controller
         name="login"
         control={control}
@@ -52,7 +61,7 @@ const Login = () => {
         )}
       />
 
-      <PasswordInput control={control} name="password"  />
+      <PasswordInput control={control} name="password" />
 
       <Button
         type="submit"

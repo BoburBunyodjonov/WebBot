@@ -59,12 +59,12 @@ const Cart = () => {
       <TableCell className="border flex justify-center">
         {item.image ? (
           <img
-            className="w-[100px] h-[100px] object-contain rounded"
+            className="w-[70px] h-[70px] object-contain rounded"
             src={`${process.env.REACT_APP_BASE_UPLOAD_URL}${item.image}`}
             alt=""
           />
         ) : (
-          <div className="w-[100px] h-[100px] flex justify-center items-center bg-gray-200 rounded">
+          <div className="w-[70px] h-[70px] flex justify-center items-center bg-gray-200 rounded">
             <Image fontSize="large" className="text-gray-500" />
           </div>
         )}
