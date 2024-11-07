@@ -38,7 +38,7 @@ const Context = () => {
     if (userId !== null) {
       localStorage.setItem("userId", userId.toString());
     } else {
-      localStorage.removeItem("userId"); 
+      localStorage.removeItem("userId");
     }
   }, [userId]);
 

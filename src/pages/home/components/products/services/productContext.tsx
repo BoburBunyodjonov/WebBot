@@ -22,14 +22,14 @@ const Context = () => {
     try {
       setLoading(true);
       const response = await api.product.getPaging({
-        // limit: getParam("limit") ? Number(getParam("limit")) : 20,
-        limit: 20,
+        limit: getParam("limit") ? Number(getParam("limit")) : 20,
+        // limit: 20,
         page: currentPage,
         search,
-        category_ids: productId
+        category_ids: productId,
       });
       if(is_infinity){
-        // setProduct(prev => [...prev, ...response.data.data]);   
+        setProduct(prev => [...prev, ...response.data.data]);   
       }else{
         setProduct(prev => response.data.data); 
       }

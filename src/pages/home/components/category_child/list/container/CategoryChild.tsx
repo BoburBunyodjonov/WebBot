@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import TableComp from "../../../../../../components/elements/table/Table";
-import useCategoryContext from "../services/categoryContext";
+import useCategoryContext from "../services/categoryChildContext";
 import { TableCell, TableRow } from "@mui/material";
 import { FolderIcon } from "../../../../../../assets/svgs";
 import Loading from "../../../../../../components/loading/Loading";
 
-const Category = () => {
+const CategorySecond = () => {
   const headers = ["Rasmi", "Nomi", "Soni"];
   const navigate = useNavigate();
 
@@ -17,13 +17,8 @@ const Category = () => {
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  // const handlerClickFunc = (id: string) => {
-  //   navigate(`/product?id=${id}`);
-  //   window.scrollTo({ top: 0, behavior: "smooth" });
-  // };
-
   const handlerClickFunc = (id: string) => {
-    navigate(`/category_child?parent_id=${id}`);
+    navigate(`/product?id=${id}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -32,6 +27,8 @@ const Category = () => {
       setPage((prevPage) => prevPage + 1);
     }
   };
+
+  console.log(category)
 
   const renderBody = category.map((item, index) => (
     <TableRow
@@ -82,4 +79,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default CategorySecond;

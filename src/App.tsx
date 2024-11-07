@@ -5,6 +5,7 @@ import Category from "./pages/home/components/category/list/container";
 import Product from "./pages/home/components/products/container";
 import Cart from "./pages/cart/container";
 import StoreProvider from "./store/StoreProvider";
+import CategorySecond from "./pages/home/components/category_child/list/container";
 
 const Layout = React.lazy(() => import("./layout/Layout"));
 const Home = React.lazy(() => import("./pages/home/container"));
@@ -23,11 +24,16 @@ const router = createBrowserRouter([
             path: "category",
             element: <Category />,
           },
+        
         ],
       },
       {
         path: "/login",
         element: <Auth />,
+      },
+      {
+        path: "category_child",
+        element: <CategorySecond />,
       },
       {
         path: "product",

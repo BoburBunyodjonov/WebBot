@@ -25,6 +25,7 @@ export interface ICategory {
   quantity?: number; 
   category: any;
   item_count: number;
+  parent_id: string;
 }
 
 export interface ICategoryFilter {
@@ -33,4 +34,6 @@ export interface ICategoryFilter {
   page: number;
   _id?: string;
   category_ids?: string[];
+  top?: boolean;
+  parent_id?: string[];
 }

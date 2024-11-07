@@ -2,12 +2,17 @@ import React, { FC, createContext, useContext, useEffect, useState } from "react
 import api from "../../../../../../common/api";
 import { ICategory } from "../../../../../../common/types/category";
 import useQueryParams from "../../../../../../hooks/useQueryParams";
+import { useLocation } from "react-router-dom";
 
 const Context = () => {
   const [category, setCategory] = useState<ICategory[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const { getParam, setParam } = useQueryParams();
+  const { search } = useLocation();
+  const query = new URLSearchParams(search);
+  const productIdParam = query.get('id');
+  const productId = productIdParam ? productIdParam.split(',') : [];
 
   const initialPage = getParam("page") ? Number(getParam("page")) : 1;
   const [page, setPageState] = useState<number>(initialPage);
@@ -20,7 +25,7 @@ const Context = () => {
         // limit: 20,
         page: currentPage,
         search,
-        top: true
+        parent_id: productId
       });
       if(is_infinity){
         setCategory(prev => [...prev, ...response.data.data]);   
@@ -65,13 +70,13 @@ const Context = () => {
   };
 };
 
-const CategoryContext = createContext<any>({ state: {}, actions: {} });
+const CategoryChildContext = createContext<any>({ state: {}, actions: {} });
 
-export const CategoryContextProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CategoryChildContextProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const value = Context();
-  return <CategoryContext.Provider value={value}>{children}</CategoryContext.Provider>;
+  return <CategoryChildContext.Provider value={value}>{children}</CategoryChildContext.Provider>;
 };
 
-export default function useCategoryContext() {
-  return useContext<ReturnType<typeof Context>>(CategoryContext);
+export default function useCategoryChildContext() {
+  return useContext<ReturnType<typeof Context>>(CategoryChildContext);
 }

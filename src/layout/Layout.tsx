@@ -19,13 +19,15 @@ const Layout = () => {
   const showButton =
     location.pathname === "/" ||
     location.pathname.startsWith("/product") ||
-    location.pathname.startsWith("/product/");
+    location.pathname.startsWith("/product/") ||
+    location.pathname.startsWith("/category_child");
 
   const showNavbar =
     location.pathname === "/" ||
     location.pathname.startsWith("/product") ||
     location.pathname.startsWith("/product/") ||
-    location.pathname.startsWith("/cart");
+    location.pathname.startsWith("/cart") ||
+    location.pathname.startsWith("/category_child");;
 
   const totalQuantity = cartitems.reduce((acc, item) => acc + item.quantity, 0);
   return (
