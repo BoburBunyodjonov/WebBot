@@ -11,8 +11,9 @@ const Context = () => {
   const { getParam, setParam } = useQueryParams();
   const { search } = useLocation();
   const query = new URLSearchParams(search);
-  const productIdParam = query.get('id');
-  const productId = productIdParam ? productIdParam.split(',') : [];
+  const productIdParam = query.get('parent_id');
+
+  const productId = productIdParam;
 
   const initialPage = getParam("page") ? Number(getParam("page")) : 1;
   const [page, setPageState] = useState<number>(initialPage);

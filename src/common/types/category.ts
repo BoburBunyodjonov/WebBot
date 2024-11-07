@@ -35,5 +35,5 @@ export interface ICategoryFilter {
   _id?: string;
   category_ids?: string[];
   top?: boolean;
-  parent_id?: string[];
+  parent_id?: string | null;
 }
