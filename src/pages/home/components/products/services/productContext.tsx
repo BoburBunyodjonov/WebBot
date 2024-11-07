@@ -28,11 +28,17 @@ const Context = () => {
         search,
         category_ids: productId,
       });
-      if(is_infinity){
-        setProduct(prev => [...prev, ...response.data.data]);   
-      }else{
-        setProduct(prev => response.data.data); 
-      }
+      const newItems = response.data.data;
+      setProduct(prev => {
+        if (is_infinity) {
+          const uniqueItems = newItems.filter(
+            item => !prev.some(existingItem => existingItem._id === item._id)
+          );
+          return [...prev, ...uniqueItems];
+        } else {
+          return newItems;
+        }
+      });
       setTotal(response.data.total);
     } catch (err) {
       console.error(err);
@@ -42,12 +48,9 @@ const Context = () => {
   };
 
   useEffect(() => {
-    getPaging(page); 
-  }, [page]);
-
-  useEffect(() => {
-    getPaging(1, getParam("search"), false)
-  }, [getParam("search")])
+    const search = getParam("search");
+    getPaging(page, search, page > 1); 
+  }, [page, getParam("search")]);
 
   const updatePage = (newPage: number | ((prevPage: number) => number)) => {
     if (typeof newPage === 'function') {

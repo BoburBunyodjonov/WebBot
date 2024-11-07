@@ -22,11 +22,18 @@ const Context = () => {
         search,
         top: true
       });
-      if(is_infinity){
-        setCategory(prev => [...prev, ...response.data.data]);   
-      }else{
-        setCategory(prev => response.data.data); 
-      }
+      const newItems = response.data.data;
+
+      setCategory(prev => {
+        if (is_infinity) {
+          const uniqueItems = newItems.filter(
+            item => !prev.some(existingItem => existingItem._id === item._id)
+          );
+          return [...prev, ...uniqueItems];
+        } else {
+          return newItems;
+        }
+      });
       setTotal(response.data.total);
     } catch (err) {
       console.error(err);
@@ -36,26 +43,19 @@ const Context = () => {
   };
 
   useEffect(() => {
-    getPaging(page); 
-  }, [page]); 
-
-  useEffect(() => {
-    getPaging(1, getParam("search"), false)
-  }, [getParam("search")])
-
+    const search = getParam("search");
+    getPaging(page, search, page > 1); 
+  }, [page, getParam("search")]);
+  
 
   const updatePage = (newPage: number | ((prevPage: number) => number)) => {
-    if (typeof newPage === 'function') {
-      setPageState(prevPage => {
-        const updatedPage = newPage(prevPage);
-        // setParam({ name: "page", value: updatedPage }); 
-        return updatedPage;
-      });
-    } else {
-      setPageState(newPage);
-      // setParam({ name: "page", value: newPage }); 
-    }
+    setPageState((prevPage) => {
+      const updatedPage = typeof newPage === 'function' ? newPage(prevPage) : newPage;
+      // setParam({ name: "page", value: updatedPage }); 
+      return updatedPage;
+    });
   };
+  
 
   return {
     state: { category, total, loading },
