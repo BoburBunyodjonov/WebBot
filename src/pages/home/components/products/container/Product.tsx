@@ -24,6 +24,7 @@ import { toast } from "react-toastify";
 import { Image } from "@mui/icons-material";
 import Loading from "../../../../../components/loading/Loading";
 import formatPriceWithSpaces from "../../../../../hooks/formatPrice";
+import useProductContext from "../services/productContext";
 
 const Product = () => {
   // Reduc Toolkit
@@ -37,15 +38,16 @@ const Product = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   const {
-    state: { total, product, loading = [] },
-    actions: { setPage },
-  } = useCategoryContext();
+    state: { totalProduct, product, loading = [] },
+    actions: { setPageProduct },
+  } = useProductContext();
+
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const loadMoreData = () => {
-    if (!loading && product.length < total) {
-      setPage((prevPage) => prevPage + 1);
+    if (!loading && product.length < totalProduct) {
+      setPageProduct((prevPage) => prevPage + 1);
     }
   };
 
@@ -64,7 +66,7 @@ const Product = () => {
   }, [cartItems, selectedProduct]);
 
   const handleAddToCart = () => {
-    if(quantity > 0 && quantity){
+    if (quantity > 0 && quantity) {
       dispatch(
         add({
           ...selectedProduct,
@@ -79,13 +81,13 @@ const Product = () => {
 
   //  Increase Quantity
   const handleIncreaseQuantity = () => {
-      // dispatch(
-      //   increaseQuantity({
-      //     _id: selectedProduct._id,
-      //     availableStock: selectedProduct.quantity,
-      //   })
-      // );
-      setQuantity((prevQuantity) => prevQuantity + 1);
+    // dispatch(
+    //   increaseQuantity({
+    //     _id: selectedProduct._id,
+    //     availableStock: selectedProduct.quantity,
+    //   })
+    // );
+    setQuantity((prevQuantity) => prevQuantity + 1);
   };
 
   // Decrease Quantity
@@ -100,14 +102,14 @@ const Product = () => {
 
   //  Increase Box
   const handleIncreaseBox = () => {
-      dispatch(
-        increaseBox({
-          _id: selectedProduct._id,
-          availableStock: selectedProduct.quantity,
-        })
-      );
-      setQuantity((prevQuantity) => prevQuantity + selectedProduct.box_item);
-      setBox((prevBox) => prevBox + 1);
+    dispatch(
+      increaseBox({
+        _id: selectedProduct._id,
+        availableStock: selectedProduct.quantity,
+      })
+    );
+    setQuantity((prevQuantity) => prevQuantity + selectedProduct.box_item);
+    setBox((prevBox) => prevBox + 1);
   };
 
   // Decrease Box
@@ -123,7 +125,7 @@ const Product = () => {
 
   const handleProductDrawerToggle = () => {
     setProductDrawerOpen(() => {
-      if(!productDrawerOpen === false){
+      if (!productDrawerOpen === false) {
         setSelectedProduct(undefined)
       }
       return !productDrawerOpen
@@ -159,7 +161,7 @@ const Product = () => {
         )}
       </TableCell>
       <TableCell className="border">{item.name}</TableCell>
-      <TableCell className="border">{formatPriceWithSpaces(item.price)}</TableCell>
+      <TableCell className="border" style={{ whiteSpace: "nowrap" }}>{formatPriceWithSpaces(item.price)}</TableCell>
     </TableRow>
   ));
 
@@ -182,13 +184,13 @@ const Product = () => {
         observer.unobserve(loadMoreRef.current);
       }
     };
-  }, [loading, product.length, total]);
+  }, [loading, product.length, totalProduct]);
 
   return (
     <div>
       <TableComp bodyChildren={renderBody} headers={headers} />
 
-      {product.length < total && !loading && (
+      {product.length < totalProduct && !loading && (
         <div ref={loadMoreRef} style={{ height: "20px", marginTop: "16px" }} />
       )}
       {loading && <Loading />}
@@ -209,22 +211,22 @@ const Product = () => {
             <div className="flex justify-between items-center">
               <p className="font-bold">Karobka</p>
               <div className="flex items-center justify-center space-x-4 py-4">
-                  <>
-                    <Button variant="contained" onClick={handleDecreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
-                      <RemoveIcon />
-                    </Button>
-                    <input
-                      min="0"
-                      pattern="[0-9]*"
-                      max="35"
-                      className="w-10 bg-[#F8F8F8] flex-grow text-center py-2 px-0 text-telegram-black bg-telegram-secondary-white outline-none"
-                      type="text"
-                      value={box}
-                    />
-                    <Button variant="contained" onClick={handleIncreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
-                      <AddIcon />
-                    </Button>
-                  </>
+                <>
+                  <Button variant="contained" onClick={handleDecreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
+                    <RemoveIcon />
+                  </Button>
+                  <input
+                    min="0"
+                    pattern="[0-9]*"
+                    max="35"
+                    className="w-10 bg-[#F8F8F8] flex-grow text-center py-2 px-0 text-telegram-black bg-telegram-secondary-white outline-none"
+                    type="text"
+                    value={box}
+                  />
+                  <Button variant="contained" onClick={handleIncreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
+                    <AddIcon />
+                  </Button>
+                </>
               </div>
             </div>
 

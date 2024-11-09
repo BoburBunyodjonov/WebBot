@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 
 const Context = () => {
   const [product, setProduct] = useState<ICategory[]>([]);
-  const [total, setTotal] = useState(0);
+  const [totalProduct, setTotalProduct] = useState(0);
   const [loading, setLoading] = useState(true);
   const { getParam, setParam } = useQueryParams();
   const { search } = useLocation();
@@ -39,7 +39,7 @@ const Context = () => {
           return newItems;
         }
       });
-      setTotal(response.data.total);
+      setTotalProduct(response.data.total);
     } catch (err) {
       console.error(err);
     } finally {
@@ -66,9 +66,9 @@ const Context = () => {
   };
 
   return {
-    state: { product, total, loading },
+    state: { product, totalProduct, loading },
     actions: {
-      setPage: updatePage, 
+      setPageProduct: updatePage, 
     },
   };
 };

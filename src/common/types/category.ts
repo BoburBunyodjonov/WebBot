@@ -25,7 +25,9 @@ export interface ICategory {
   quantity?: number; 
   category: any;
   item_count: number;
+  child_count: number;
   parent_id: string;
+  image: any;
 }
 
 export interface ICategoryFilter {

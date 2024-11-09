@@ -35,7 +35,7 @@ const Cart = () => {
 
   const handleRemoveItem = (id: string) => {
     dispatch(removeItem(id));
-    toast.success("Mahsulot savatdan o'chirildi!");
+    // toast.success("Mahsulot savatdan o'chirildi!");
   };
 
   const {

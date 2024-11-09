@@ -23,7 +23,7 @@ const Category = () => {
   // };
 
   const handlerClickFunc = (id: string) => {
-    navigate(`/category_child?parent_id=${id}`);
+    navigate(`/category_child?parent_id=${id}&id=${id}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -46,7 +46,7 @@ const Category = () => {
         <FolderIcon />
       </TableCell>
       <TableCell className="border">{item.name}</TableCell>
-      <TableCell className="border">{item.item_count}</TableCell>
+      <TableCell className="border">{item.child_count + item.item_count}</TableCell>
     </TableRow>
   ));
 
