@@ -12,7 +12,7 @@ const Navbar = () => {
 
   const {
     state: { searchInput },
-    actions: { handleSearch, handleInputChange },
+    actions: { handleInputChange },
   } = useSearchContext();
 
   const handleBackClick = () => {
@@ -36,10 +36,10 @@ const Navbar = () => {
                 id="outlined-basic"
                 label="Search"
                 variant="outlined"
-                // value={searchInput}
+                value={searchInput}
                 onChange={handleInputChange}
               />
-              <Button variant="contained" onClick={handleSearch}>
+              <Button variant="contained">
                 <SearchIcon />
               </Button>
             </form>
