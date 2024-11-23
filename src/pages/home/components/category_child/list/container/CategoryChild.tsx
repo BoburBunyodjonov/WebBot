@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import TableComp from "../../../../../../components/elements/table/Table";
 import useCategoryContext from "../services/categoryChildContext";
 import { Button, TableCell, TableRow } from "@mui/material";
@@ -7,13 +7,11 @@ import { FolderIcon } from "../../../../../../assets/svgs";
 import Loading from "../../../../../../components/loading/Loading";
 import useProductContext from "../../../products/services/productContext";
 import { Image } from "@mui/icons-material";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../../../store/store";
 import ModalTop from "../../../../../../components/elements/modalTop/ModalTop";
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
-
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../../../../store/store";
 import {
   add,
   increaseQuantity,
@@ -23,43 +21,66 @@ import {
 } from "../../../../../../store/cartSlice";
 import { CartItem } from "../../../../../../common/types/cart";
 import formatPriceWithSpaces from "../../../../../../hooks/formatPrice";
+import useQueryParams from "../../../../../../hooks/useQueryParams";
 
-const CategorySecond = () => {
+const CategoryChild = () => {
   const headers = ["Rasmi", "Nomi", "Soni"];
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { search } = useLocation();
   const cartItems = useSelector((state: RootState) => state.cart);
+
   const [quantity, setQuantity] = useState(0);
   const [box, setBox] = useState(0);
-
   const [productDrawerOpen, setProductDrawerOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const { getParam, setParam } = useQueryParams();
+  const initialPage = getParam("page") ? Number(getParam("page")) : 1;
+  const [page, setPageState] = useState<number>(initialPage);
+
+  const query = new URLSearchParams(search);
+  const parentId = query.get('parent_id');
+  const id = query.get('id');
 
   const {
     state: { total, category, loading },
-    actions: { setPage },
+    actions: { setPage, getPaging },
   } = useCategoryContext();
 
   const {
-    state: { totalProduct, product },
-    actions: { setPageProduct },
+    state: { totalProduct, product, loading: productLoading },
+    actions: { setPageProduct, getPaging: getProductPaging },
   } = useProductContext();
+
+  const loadData = async () => {
+    if (parentId && id) {
+      await getPaging(page, "", false);
+      await getProductPaging(1, "", false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [parentId, id]);
+
+  const handleCategoryClick = async (categoryId: string) => {
+    navigate(`/category_child?parent_id=${categoryId}&id=${categoryId}`);
+    // await loadData();
+  };
+
+  const handleProductClick = (product: any) => {
+    setQuantity(0);
+    setBox(0);
+    setSelectedProduct(product);
+    setProductDrawerOpen(true);
+  };
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const handlerClickFunc = (id: string, isCategory: boolean) => {
-    const path = isCategory ? `/product?id=${id}` : `/category?id=${id}`;
-    navigate(path);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const loadMoreData = () => {
-    // Check if more category data is needed
     if (!loading && category.length < total) {
       setPage((prevPage) => prevPage + 1);
-    }
-    // Check if more product data is needed only if categories are empty
-    else if (!loading && category.length === 0 && product.length < totalProduct) {
+    } else if (!productLoading && product.length < totalProduct) {
       setPageProduct((prevPage) => prevPage + 1);
     }
   };
@@ -145,57 +166,9 @@ const CategorySecond = () => {
     });
   };
 
-  const handleProductClick = (item: any) => {
-    setQuantity(0);
-    setSelectedProduct(item);
-    handleProductDrawerToggle();
-  };
 
-  const renderBody = [
-    ...category?.map((item, index) => (
-      <TableRow
-        className="cursor-pointer"
-        onClick={() => handlerClickFunc(item._id, true)}
-        key={`category-${index}`}
-        sx={{
-          backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#e0e0e0",
-        }}
-      >
-        <TableCell className="border flex justify-center">
-          <FolderIcon />
-        </TableCell>
-        <TableCell className="border">{item.name}</TableCell>
-        <TableCell className="border">{item.item_count}</TableCell>
-      </TableRow>
-    )),
-    ...product?.map((item, index) => (
-      <TableRow
-        className="cursor-pointer"
-        onClick={() => handleProductClick(item)}
-        key={`product-${index}`}
-        sx={{
-          backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#e0e0e0",
-        }}
-      >
-        <TableCell className="border flex justify-center">
-          {item.image ? (
-            <img
-              className="w-[100px] h-[100px] object-contain rounded"
-              src={`${process.env.REACT_APP_BASE_UPLOAD_URL}${item.image}`}
-              alt=""
-            />
-          ) : (
-            <div className="w-[100px] h-[100px] flex justify-center items-center bg-gray-200 rounded">
-              <Image fontSize="large" className="text-gray-500" />
-            </div>
-          )}
-        </TableCell>
-        <TableCell className="border">{item.name}</TableCell>
-        <TableCell className="border" style={{ whiteSpace: "nowrap" }}>{formatPriceWithSpaces(item.price ?? 0)}</TableCell>
-      </TableRow>
-    )),
-  ];
 
+  ////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -218,54 +191,95 @@ const CategorySecond = () => {
     };
   }, [loading, category.length, total, product.length, totalProduct]);
 
+  const renderTableRows = () => [
+    ...category.map((item, index) => (
+      <TableRow
+        key={`category-${item._id}`}
+        onClick={() => handleCategoryClick(item._id)}
+        className="cursor-pointer"
+        sx={{ backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#e0e0e0" }}
+      >
+        <TableCell className="border flex justify-center">
+          <FolderIcon />
+        </TableCell>
+        <TableCell className="border">{item.name}</TableCell>
+        <TableCell className="border">{item.child_count + item.item_count}</TableCell>
+      </TableRow>
+    )),
+    ...product.map((item, index) => (
+      <TableRow
+        key={`product-${item._id}`}
+        onClick={() => handleProductClick(item)}
+        className="cursor-pointer"
+        sx={{ backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#e0e0e0" }}
+      >
+        <TableCell className="border flex justify-center">
+          {item.image ? (
+            <img
+              className="w-[100px] h-[100px] object-contain rounded"
+              src={`${process.env.REACT_APP_BASE_UPLOAD_URL}${item.image}`}
+              alt={item.name}
+            />
+          ) : (
+            <div className="w-[100px] h-[100px] flex justify-center items-center bg-gray-200 rounded">
+              <Image fontSize="large" className="text-gray-500" />
+            </div>
+          )}
+        </TableCell>
+        <TableCell className="border">{item.name}</TableCell>
+        <TableCell className="border" style={{ whiteSpace: "nowrap" }}>
+          {formatPriceWithSpaces(item.price ?? 0)}
+        </TableCell>
+      </TableRow>
+    ))
+  ];
+
   return (
     <div>
-      <TableComp bodyChildren={renderBody} headers={headers} />
+      <TableComp bodyChildren={renderTableRows()} headers={headers} />
+
       {(category.length < total || (category.length === 0 && product.length < totalProduct)) && !loading && (
         <div ref={loadMoreRef} style={{ height: "20px", marginTop: "16px" }} />
       )}
-      {loading && <Loading />}
+
+      {(loading || productLoading) && <Loading />}
+
+      {!loading && category.length === 0 && product.length === 0 && (
+        <p className="text-center text-gray-500 mt-4">Kategoriyalar yoki mahsulotlar topilmadi.</p>
+      )}
 
       <ModalTop
         open={productDrawerOpen}
-        onClose={handleProductDrawerToggle}
+        onClose={() => setProductDrawerOpen(false)}
         handleAddToCart={handleAddToCart}
       >
         {selectedProduct && (
-          <>
-            <div className="flex flex-col justify-center items-center">
-              <p className="text-xl">{selectedProduct.name}</p>
-              <p className="font-semibold">(soni {selectedProduct.quantity})</p>
+          <div className="space-y-4">
+            <div className="text-center">
+              <h3 className="text-xl font-bold">{selectedProduct.name}</h3>
+              <p className="text-gray-600">Mavjud: {selectedProduct.quantity}</p>
             </div>
 
-            {/* Counter 1 */}
             <div className="flex justify-between items-center">
-              <p className="font-bold">Karobka</p>
-              <div className="flex items-center justify-center space-x-4 py-4">
-                <>
-                  <Button variant="contained" onClick={handleDecreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
-                    <RemoveIcon />
-                  </Button>
-                  <input
-                    min="0"
-                    pattern="[0-9]*"
-                    max="35"
-                    className="w-10 bg-[#F8F8F8] flex-grow text-center py-2 px-0 text-telegram-black bg-telegram-secondary-white outline-none"
-                    type="text"
-                    value={box}
-                  />
-                  <Button variant="contained" onClick={handleIncreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
-                    <AddIcon />
-                  </Button>
-                </>
+              <span className="font-bold">Karobka</span>
+              <div className="flex items-center gap-4">
+                <Button variant="contained" onClick={handleDecreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
+                  <RemoveIcon />
+                </Button>
+                <span className="w-10 text-center">{box}</span>
+                <Button variant="contained" onClick={handleIncreaseBox} disabled={selectedProduct.box_item > selectedProduct.quantity}>
+                  <AddIcon />
+                </Button>
               </div>
             </div>
 
-            {/* Counter 2 */}
             <div className="flex justify-between items-center">
-              <p className="font-bold">Soni</p>
-              <div className="flex items-center justify-center space-x-4 py-4">
-                <Button variant="contained" onClick={handleDecreaseQuantity}>
+              <span className="font-bold">Soni</span>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="contained"
+                  onClick={handleDecreaseQuantity}
+                >
                   <RemoveIcon />
                 </Button>
                 <input
@@ -276,16 +290,19 @@ const CategorySecond = () => {
                   type="text"
                   value={quantity}
                 />
-                <Button variant="contained" onClick={handleIncreaseQuantity} >
+                <Button
+                  variant="contained"
+                  onClick={handleIncreaseQuantity}
+                >
                   <AddIcon />
                 </Button>
               </div>
             </div>
-          </>
+          </div>
         )}
       </ModalTop>
     </div>
   );
 };
 
-export default CategorySecond;
+export default CategoryChild;

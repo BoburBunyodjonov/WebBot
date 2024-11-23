@@ -71,6 +71,7 @@ const Context = () => {
     state: { category, total, loading },
     actions: {
       setPage: updatePage,
+      getPaging
     },
   };
 };

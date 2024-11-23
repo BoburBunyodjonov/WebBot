@@ -69,6 +69,7 @@ const Context = () => {
     state: { product, totalProduct, loading },
     actions: {
       setPageProduct: updatePage, 
+      getPaging
     },
   };
 };

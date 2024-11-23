@@ -8,18 +8,27 @@ const Context = () => {
 
 
 
-  const debouncedSetParam = useCallback(
-    debounce((value: string) => {
-      setParam({ name: "search", value: value.trim() !== "" ? value : undefined });
-    }, 0),
-    []
-  );
+  // const debouncedSetParam = useCallback(
+  //   debounce((value: string) => {
+  //     setParam({ name: "search", value: value.trim() !== "" ? value : value });
+  //   }, 0),
+  //   []
+  // );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = e.target.value;
     setSearchInput(value);
-    debouncedSetParam(value);
+    setParam({ name: "search", value: value.trim() !== "" ? value : undefined });
+    // debouncedSetParam(value);
   };
+
+  // const handleInputChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
+  //   const value = e.target.value;
+  //   // setSearchInput(e.target.value);
+  //   setSearchInput(value);
+  //   setParam({ name: "search", value: value.trim() !== "" ? value : undefined });
+  // }, 300);
+
 
 
 
@@ -29,15 +38,15 @@ const Context = () => {
   }, [getParam]);
 
 
-  useEffect(() => {
-    const handleRouteChange = () => {
-      setSearchInput("");
-      setParam({ name: "search", value: undefined });
-    };
+  // useEffect(() => {
+  //   const handleRouteChange = () => {
+  //     setSearchInput("");
+  //     setParam({ name: "search", value: undefined });
+  //   };
 
-    window.addEventListener("popstate", handleRouteChange);
-    return () => window.removeEventListener("popstate", handleRouteChange);
-  }, [getParam]);
+  //   window.addEventListener("popstate", handleRouteChange);
+  //   return () => window.removeEventListener("popstate", handleRouteChange);
+  // }, [getParam]);
 
   return {
     state: { searchInput },
